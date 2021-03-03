@@ -1,15 +1,9 @@
 package aps.unip.enums;
 
 public enum Status {
-	STATUS200("sucesso");
-
-	private String valor;
-	
-	Status(String valor) {
-		this.valor = valor;
-	}
-	
-	public String getValor() {
-		return this.valor;
-	}
+	STATUS_OK,
+	STATUS_ERRO_PARAMETRO,
+	STATUS_ERRO_SERVIDOR,
+	STATUS_ERRO_CLIENTE,
+	STATUS_ERRO_CADASTRO
 }

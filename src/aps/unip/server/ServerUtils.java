@@ -22,12 +22,15 @@ public class ServerUtils {
 	public void tratarConexao(Socket socket) {
 		new Thread() {
 			public void run() {
+				ObjectOutputStream output;
+				ObjectInputStream input;
 				try {
 
-					ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
-					ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+					output = new ObjectOutputStream(socket.getOutputStream());
+					input = new ObjectInputStream(socket.getInputStream());
 
 					Mensagem mensagemInput = (Mensagem) input.readObject();
+					Mensagem mensagemOutput = new Mensagem();
 					/*
 					 * Bloco de cadastro
 					 */
@@ -40,42 +43,30 @@ public class ServerUtils {
 								|| mensagemInput.getParametro("senha") == null
 								|| mensagemInput.getParametro("login") == null) {
 
-							Mensagem mensagemOutput = new Mensagem();
 							mensagemOutput.setRequisicao(Requisicao.CADASTRO_REPLY);
 							mensagemOutput.setStatus(Status.STATUS_ERRO_PARAMETRO);
 							mensagemOutput.setParametros("mensagem", "Falta de parametros");
-
-							output.writeObject(mensagemOutput);
-							output.flush();
 						} else {
 							DAOUserCadastro cadastro = new DAOUserCadastro();
 							if (cadastro.cadastrarUsuario(mensagemInput.getMap())) {
 
-								Mensagem mensagemOutput = new Mensagem();
 								mensagemOutput.setRequisicao(Requisicao.CADASTRO_REPLY);
 								mensagemOutput.setStatus(Status.STATUS_OK);
 								mensagemOutput.setParametros("mensagem", "Usuario cadastrado");
-
-								output.writeObject(mensagemOutput);
-								output.flush();
 							} else {
-								Mensagem mensagemOutput = new Mensagem();
+
 								mensagemOutput.setRequisicao(Requisicao.CADASTRO_REPLY);
 								mensagemOutput.setStatus(Status.STATUS_ERRO_CADASTRO);
 								mensagemOutput.setParametros("mensagem", "erro ao tentar cadastrar");
-
-								output.writeObject(mensagemOutput);
-								output.flush();
 							}
 						}
 					} else if (mensagemInput.getRequisicao() == Requisicao.LOGIN) {
 
-						/*
-						 * executa as regras de negocio. retorna estatos de sucesso pelo output do
-						 * usuario e adiciona na lista de usuarios online, caso estiver cadastrado.
-						 * retorna estatos de erro pelo output do usuario, caso nao esteja cadastrado.
-						 */
+
 					}
+					
+					output.writeObject(mensagemOutput);
+					output.flush();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

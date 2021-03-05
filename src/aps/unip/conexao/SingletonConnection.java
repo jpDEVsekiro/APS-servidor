@@ -2,6 +2,8 @@ package aps.unip.conexao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SingletonConnection {
@@ -30,5 +32,29 @@ public class SingletonConnection {
 	
 	public static Connection getConnection() {
 		return connection;
+	}
+	
+	public static void close(PreparedStatement statement) {
+		try {
+			if( statement != null) {
+				statement.close();
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void close(PreparedStatement statement, ResultSet resultSet) {
+		try {
+			if(resultSet != null) {
+				
+				resultSet.close();
+			}
+			if(statement != null) {				
+				statement.close();
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

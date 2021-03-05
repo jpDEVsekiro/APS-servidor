@@ -2,14 +2,16 @@ package aps.unip.protocolo;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import aps.unip.enums.Requisicao;
 import aps.unip.enums.Status;
 
 public class Mensagem implements Serializable {
+	
 	private Requisicao requisicao;
 	private Status status;
-	private HashMap<String, Object> parametros = new HashMap<String, Object>();
+	private Map<String, Object> parametros = new HashMap<String, Object>();
 	
 	
 	public Mensagem() {
@@ -29,8 +31,16 @@ public class Mensagem implements Serializable {
 	}
 	
 	public Object getParametro(String chave) {
-		return chave;
+		return parametros.get(chave);
 		
+	}
+	
+	public void setMap(Map<String, Object> map) {
+		this.parametros = map;
+	}
+	
+	public Map<String, Object> getMap(){
+		return this.parametros;
 	}
 
 	public Requisicao getRequisicao() {

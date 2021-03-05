@@ -1,7 +1,7 @@
 # APS-servidor
 
 
-<Requisicao>				<>	
+<Requisicao>				<RequisicaoResposta>	
 							<Status Resposta>
 [Parametro:Valor]			[Parametro:Valor]
 [Parametro:Valor]			[Parametro:Valor]
@@ -18,3 +18,20 @@
 [segundoNome:String]
 [senha:String]
 [login:String]
+
+
+////Conexao
+<LOGAR>						
+<SEMSTATUS>
+[nome:String]
+[segundoNome:String]
+[senha:String]
+[login:String]
+
+
+/////////////////////////
+Id>>
+nome completo
+nome de usuario
+login
+senha

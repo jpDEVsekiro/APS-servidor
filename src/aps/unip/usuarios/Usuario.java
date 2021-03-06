@@ -4,48 +4,64 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import aps.unip.protocolo.Mensagem;
+import aps.unip.tratamento.TratamentoRequisicao;
 
 public class Usuario {
 	private String nome;
 	private String apelido;
-	private String senha;
-	private String login;
-	private Socket socket = null;
-	private ObjectOutputStream output = null;
-	private ObjectInputStream input = null;
+	private Socket socket;
+	private ObjectOutputStream output;
+	private ObjectInputStream input;
+	Mensagem mensagemInput;
 	
-	public Usuario(Socket socket) throws IOException {
-		this.socket = socket;
-		this.output = new ObjectOutputStream(socket.getOutputStream());
-		this.input = new ObjectInputStream(socket.getInputStream());
+	public Usuario(Socket socket) {
+		try {	
+			this.socket = socket;
+			this.output = new ObjectOutputStream(socket.getOutputStream());
+			this.input = new ObjectInputStream(socket.getInputStream());
+			mensagemInput = (Mensagem) input.readObject();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private Thread requisicaoListener = new Thread() {
+		public void run() {
+			for (;;) {
+				try {
+					mensagemInput = (Mensagem) input.readObject();
+					TratamentoRequisicao tratamento = new TratamentoRequisicao();
+					Mensagem mensagemOutput = tratamento.tratarRequisicao(mensagemInput);
+					dispararMensagem(mensagemOutput);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	};
+	
+	public void dispararMensagem(Mensagem mensagemOutput) {
+		new Thread() {
+			public void run() {
+				try {
+					output.writeObject(mensagemOutput);
+					output.flush();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	};
+	
+	public void iniciarRequisicaoListener() {
+		requisicaoListener.start();
 	}
 	
 	public void fecharUsuario() throws IOException {
-		if (output != null) {
-			output.close();
-		}
-		if (input != null) {
-			input.close();
-		}
 		if(socket != null) {
 			socket.close();
 		}
-	}
-
-	public ObjectOutputStream getOutput() {
-		return output;
-	}
-
-	public void setOutput(ObjectOutputStream output) {
-		this.output = output;
-	}
-
-	public ObjectInputStream getInput() {
-		return input;
-	}
-
-	public void setInput(ObjectInputStream input) {
-		this.input = input;
 	}
 
 	public String getNome() {
@@ -54,22 +70,6 @@ public class Usuario {
 
 	public void setNome(String nome) {
 		this.nome = nome;
-	}
-
-	public String getSenha() {
-		return senha;
-	}
-
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
-
-	public String getLogin() {
-		return login;
-	}
-
-	public void setLogin(String login) {
-		this.login = login;
 	}
 	
 	public String getApelido() {
@@ -84,12 +84,20 @@ public class Usuario {
 		return socket;
 	}
 
-	public void setSocket(Socket socket) {
+	public void setSocket(Socket socket) throws IOException {
 		this.socket = socket;
 	}
 
-	@Override
+	public Mensagem getMensagemInput() {
+		return mensagemInput;
+	}
+
+	public void setMensagemInput(Mensagem mensagemInput) {
+		this.mensagemInput = mensagemInput;
+	}
+
 	public String toString() {
-		return "Usuario [nome=" + nome + ", senha=" + senha + ", login=" + login + "]";
+		return "Usuario [nome=" + nome + ", apelido=" + apelido + ", socket=" + socket +
+				 "]";
 	}
 }

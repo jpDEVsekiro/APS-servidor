@@ -11,6 +11,8 @@ import javax.swing.JOptionPane;
 import aps.unip.enums.Requisicao;
 import aps.unip.enums.Status;
 import aps.unip.protocolo.Mensagem;
+import aps.unip.tratamento.TratamentoConexao;
+import aps.unip.tratamento.TratamentoRequisicao;
 import aps.unip.usuarios.Usuario;
 import aps.unip.usuarios.Usuarios;
 
@@ -33,8 +35,8 @@ public class Server {
 				System.out.println("Esperando conexao");
 				Socket socket = server.esperaConexao();
 				System.out.println("Cliente Conectado");
-				ServerUtils utils = new ServerUtils();
-				utils.tratarConexao(socket);
+				TratamentoConexao conexao = new TratamentoConexao();
+				conexao.tratarConexao(socket);
 				System.out.println("Fim");
 			}
 

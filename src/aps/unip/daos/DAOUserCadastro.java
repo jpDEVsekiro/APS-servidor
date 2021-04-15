@@ -15,9 +15,8 @@ public class DAOUserCadastro {
 		ResultSet resultSet = null;
 		try {
 			String SQL = String.format(
-					"select * from usuario where apelido_usuario = \"%s\" OR login_usuario = \"%s\";", 
-					parametros.get("apelido"),
-					parametros.get("login"));
+					"select * from usuario where email_usuario = \"%s\";", 
+					parametros.get("email"));
 			statement = connection.prepareStatement(SQL);
 			resultSet = statement.executeQuery();
 			if(resultSet.next()) {
@@ -38,13 +37,12 @@ public class DAOUserCadastro {
 		if(checarExistencia(parametros)) {
 			PreparedStatement statement = null;
 			try {
-				String SQL = String.format(
-						"INSERT INTO `apschat`.`usuario`(`nome_usuario`,`apelido_usuario`,`senha_usuario`,`login_usuario`)VALUES('%s','%s','%s','%s');",
-						parametros.get("nome"),
-						parametros.get("apelido"),
-						parametros.get("senha"),
-						parametros.get("login"));
+				String SQL = "INSERT INTO `apschat`.`usuario`(`nome_usuario`,`senha_usuario`,`email_usuario`,`foto`)VALUES(?,?,?,?);";
 				statement = connection.prepareStatement(SQL);
+				statement.setString(1, (String) parametros.get("nome"));
+				statement.setString(2, (String) parametros.get("senha"));
+				statement.setString(3, (String) parametros.get("email"));
+				statement.setBytes(4, (byte[]) parametros.get("foto"));
 				statement.execute();
 				connection.commit();
 				return true;

@@ -8,8 +8,8 @@ import aps.unip.protocolo.Mensagem;
 import aps.unip.tratamento.TratamentoRequisicao;
 
 public class Usuario {
-	private String nome;
-	private String apelido;
+	private String nome = null;
+	private Integer id = 0;
 	private Socket socket;
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
@@ -35,6 +35,12 @@ public class Usuario {
 					Mensagem mensagemOutput = tratamento.tratarRequisicao(mensagemInput);
 					dispararMensagem(mensagemOutput);
 				} catch (Exception e) {
+					if(e.getMessage().equalsIgnoreCase("Connection reset")) {
+						System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>[USUARIO DESCONECTADO]");
+						fecharUsuario();
+						Usuarios.removeUsuario(getUsuarioId());
+						break;
+					}
 					e.printStackTrace();
 				}
 			}
@@ -58,9 +64,13 @@ public class Usuario {
 		requisicaoListener.start();
 	}
 	
-	public void fecharUsuario() throws IOException {
-		if(socket != null) {
-			socket.close();
+	public void fecharUsuario() {
+		try {
+			if(socket != null) {
+				socket.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -72,14 +82,6 @@ public class Usuario {
 		this.nome = nome;
 	}
 	
-	public String getApelido() {
-		return apelido;
-	}
-
-	public void setApelido(String apelido) {
-		this.apelido = apelido;
-	}
-
 	public Socket getSocket() {
 		return socket;
 	}
@@ -95,9 +97,21 @@ public class Usuario {
 	public void setMensagemInput(Mensagem mensagemInput) {
 		this.mensagemInput = mensagemInput;
 	}
-
-	public String toString() {
-		return "Usuario [nome=" + nome + ", apelido=" + apelido + ", socket=" + socket +
-				 "]";
+	
+	public int getUsuarioId() {
+		return id;
 	}
+
+	public void setUsuarioId(Integer id) {
+		this.id = id;
+	}
+
+	@Override
+	public String toString() {
+		return "Usuario [nome=" + nome + "]";
+	}
+
+
+
+	
 }

@@ -17,13 +17,17 @@ public class SingletonConnection {
 		connect();
 	}
 	
+	public SingletonConnection() {
+		
+	}
+	
 	private static void connect() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			if (connection == null) {
 				connection = DriverManager.getConnection(URL, USER, PASSWORD);
 				connection.setAutoCommit(false);
-				System.out.println("conectado");
+				System.out.println("[BANCO DE DADOS CONECTADO]");
 			}
 		} catch (ClassNotFoundException | SQLException e){
 			e.printStackTrace();

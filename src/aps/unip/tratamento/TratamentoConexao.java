@@ -2,7 +2,7 @@ package aps.unip.tratamento;
 
 import java.net.Socket;
 import java.util.Map;
-
+import aps.unip.daos.DAOUserCadastro;
 import aps.unip.daos.DAOUserLogin;
 import aps.unip.enums.Requisicao;
 import aps.unip.enums.Status;
@@ -16,39 +16,67 @@ public class TratamentoConexao {
 		Usuario usuario = new Usuario(socket);
 		
 		if(usuario.getMensagemInput().getRequisicao() == Requisicao.CADASTRO) {
+			Mensagem mensagemRespostaCadastro = new Mensagem();
+			DAOUserCadastro cadastro = new DAOUserCadastro();
+			if(cadastro.cadastrarUsuario(usuario.getMensagemInput().getMap())) {
+				mensagemRespostaCadastro.setRequisicao(Requisicao.CADASTRO_REPLY);
+				mensagemRespostaCadastro.setStatus(Status.CADASTRO_EFETUADO);
+				mensagemRespostaCadastro.setParametros("mensagem", "cadastro efetuado");
+				usuario.dispararMensagem(mensagemRespostaCadastro);
+				try {
+					Thread.sleep(2000);
+					usuario.fecharUsuario();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			else {
+				mensagemRespostaCadastro.setRequisicao(Requisicao.CADASTRO_REPLY);
+				mensagemRespostaCadastro.setStatus(Status.CADASTRO_NAO_EFETUADO);
+				mensagemRespostaCadastro.setParametros("mensagem", "usuario existente");
+				usuario.dispararMensagem(mensagemRespostaCadastro);
+				try {
+					Thread.sleep(2000);
+					usuario.fecharUsuario();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			
-		}else if (usuario.getMensagemInput().getRequisicao() == Requisicao.LOGIN) {
+		}
+		else if (usuario.getMensagemInput().getRequisicao() == Requisicao.LOGIN) {
 			DAOUserLogin login = new DAOUserLogin();
-			Map<String, Object> dados = login.validarUsuario((String) usuario.getMensagemInput().getParametro("usuario"),
-			                                                 (String) usuario.getMensagemInput().getParametro("senha"));
-			if(dados != null) {
-				usuario.setNome((String) dados.get("nome"));
-				usuario.setApelido((String) dados.get("apelido"));
+			Map<String, Object> retorno = login.validarUsuario((String) usuario.getMensagemInput().getParametro("email"),
+                    (String) usuario.getMensagemInput().getParametro("senha"));
+		
+			if(retorno != null) {
+				usuario.setNome( (String) retorno.get("nome"));
+				usuario.setUsuarioId((Integer) retorno.get("id"));
 				Usuarios.addUsuario(usuario);
 				
 				Mensagem mensagemRespostaLogin = new Mensagem();
 				mensagemRespostaLogin.setRequisicao(Requisicao.LOGIN_REPLY);
 				mensagemRespostaLogin.setStatus(Status.STATUS_OK);
-				mensagemRespostaLogin.setParametros("nome", dados.get("nome"));
-				mensagemRespostaLogin.setParametros("apelido", dados.get("apelido"));
+				mensagemRespostaLogin.setMap(retorno);
 				mensagemRespostaLogin.setParametros("mensagem", "usuario logado");
 				usuario.dispararMensagem(mensagemRespostaLogin);
-				
 				usuario.iniciarRequisicaoListener();
+				
 			}else {
 				Mensagem mensagemRespostaLogin = new Mensagem();
 				mensagemRespostaLogin.setRequisicao(Requisicao.LOGIN_REPLY);
 				mensagemRespostaLogin.setStatus(Status.USUARIO_NAO_CADASTRADO);
 				mensagemRespostaLogin.setParametros("mensagem", "Usuario nao cadastrado");
 				usuario.dispararMensagem(mensagemRespostaLogin);
+				
+				try {
+					Thread.sleep(2000);
+					usuario.fecharUsuario();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			
-			//consultar no banco de dados
-			/// retorno de map com os dados do usuario, se estiver cadastrado
-			/// retorno de null se nao estiver
 		}
-		
-		
 	}
 	
 }

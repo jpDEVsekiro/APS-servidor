@@ -4,17 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Usuarios {
-	private static Map<String, Usuario> usuariosOnLine = new HashMap<>();
+	private static Map<Integer, Usuario> usuariosOnLine = new HashMap<>();
 	
 	public static void addUsuario(Usuario usuario) {
-		usuariosOnLine.put(usuario.getNome(),usuario);
+		usuariosOnLine.put(usuario.getUsuarioId(), usuario);
 	}
 	
-	public static Usuario getUsuario(String usuarioApelido) {
-		return usuariosOnLine.get(usuarioApelido);
+	public static Usuario getUsuario(int id) {
+		return usuariosOnLine.get(id);
 	}
 	
-	public void removeUsuario(String usuarioNome) {
-		usuariosOnLine.remove(usuarioNome);
+	public static void removeUsuario(int id) {
+		usuariosOnLine.remove(id);
 	}	
 }

@@ -13,20 +13,21 @@ import aps.unip.usuarios.Usuario;
 public class DAOUserLogin {
 	Connection connection = SingletonConnection.getConnection();
 	
-	public Map<String, Object> validarUsuario(String usuario, String senha) {
-		PreparedStatement statement;
-		ResultSet resultSet;
-		Map<String, Object> retorno = new HashMap<String, Object>();
+	public Map<String, Object> validarUsuario(String email, String senha) {
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
 		try {
 			String SQL = String.format(
-					"SELECT * FROM usuario WHERE login_usuario='%s' AND senha_usuario='%s';",
-					usuario,
+					"SELECT * FROM usuario WHERE email_usuario='%s' AND senha_usuario='%s';",
+					email,
 					senha);
 			statement = connection.prepareStatement(SQL);
 			resultSet = statement.executeQuery();
 			if(resultSet.next()) {
+				Map<String, Object> retorno = new HashMap<String, Object>();
 				retorno.put("nome", resultSet.getString("nome_usuario"));
-				retorno.put("apelido",resultSet.getString("apelido_usuario"));
+				retorno.put("id", resultSet.getInt("id_usuario"));
+				retorno.put("foto", resultSet.getBytes("foto"));
 				return retorno;
 			}
 			else {
@@ -35,21 +36,11 @@ public class DAOUserLogin {
 		}catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		}finally {
+			SingletonConnection.close(statement, resultSet);
 		}
 	}
 }
-
-//requisicao LOGIN
-//status vazio
-//login
-//senha
-
-//login reply
-//status ok
-//Nome string
-//apelido String
-
-
 
 
 

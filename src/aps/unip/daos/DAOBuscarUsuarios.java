@@ -10,22 +10,22 @@ import aps.unip.conexao.SingletonConnection;
 public class DAOBuscarUsuarios {
 	private Connection connection = SingletonConnection.getConnection();
 	
-	public Object[][] busacarUsuarios(String nome){
+	public Object[][] busacarUsuarios(String nome, int idSolicitante){
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		
 		ArrayList<Object> resultados = new ArrayList<Object>();
 		try {
-			String SQL = "SELECT * from `apschat`.`usuario` WHERE nome_usuario like '%"+nome+"%';";
+			String SQL = "SELECT * FROM usuario WHERE usuario_nome LIKE '%"+nome+"%' AND usuario_id <> "+idSolicitante+";";
 		
 			statement = connection.prepareStatement(SQL);
 			resultSet = statement.executeQuery();
 
 			
 			while (resultSet.next()) {
-				resultados.add(resultSet.getString("id_usuario"));
-				resultados.add(resultSet.getString("nome_usuario"));
-				resultados.add(resultSet.getBytes("foto"));
+				resultados.add(resultSet.getString("usuario_id"));
+				resultados.add(resultSet.getString("usuario_nome"));
+				resultados.add(resultSet.getBytes("usuario_foto"));
 			}
 			int listSize = resultados.size();
 

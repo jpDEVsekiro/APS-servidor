@@ -1,6 +1,7 @@
 package aps.unip.tratamento;
 
 
+import aps.unip.daos.DAOMensagens;
 import aps.unip.daos.DAOBuscarUsuarios;
 import aps.unip.enums.Requisicao;
 import aps.unip.enums.Status;
@@ -20,8 +21,15 @@ public class TratamentoRequisicao{
 			mensagemDestinatario.setRequisicao(Requisicao.NOVA_MENSAGEM);
 			mensagemDestinatario.setStatus(Status.NOVA_MENSAGEM);
 			Usuario usuarioDestinatario = Usuarios.getUsuario((Integer) mensagemInput.getParametro("destinatario_id"));
-			usuarioDestinatario.dispararMensagem(mensagemDestinatario);
-
+			if (usuarioDestinatario != null) {
+				System.out.println("[MENSAGEM ENVIADA DE"+ mensagemInput.getParametro("remetente_id")+" PARA "+ mensagemInput.getParametro("destinatario_id")+"]");
+				usuarioDestinatario.dispararMensagem(mensagemDestinatario);
+			}else {
+				System.out.println("USUARIO NAO ESTA ONLINE [MENSAGEM ARQUIVADA]");
+				DAOMensagens daoMensagens = new DAOMensagens();
+				daoMensagens.arquivarMensagem(mensagemInput);
+			}
+			
 			mensagemRemetenteReply = new Mensagem();
 			mensagemRemetenteReply.setRequisicao(Requisicao.ENVIAR_MENSAGEM_REPLY);
 			mensagemRemetenteReply.setStatus(Status.MENSAGEM_ENVIADA);
@@ -29,7 +37,9 @@ public class TratamentoRequisicao{
 			return mensagemRemetenteReply;
 		} catch (Exception e) {
 			if(e.getMessage().equals(ERRO_USUARIO_OFFLINE)) {
-				System.out.println("NAO FEITO [MENSAGEM ARQUIVADA]");
+				
+				
+				
 				mensagemRemetenteReply = new Mensagem();
 				mensagemRemetenteReply.setRequisicao(Requisicao.ENVIAR_MENSAGEM_REPLY);
 				mensagemRemetenteReply.setStatus(Status.MENSAGEM_ARQUIVADA);
@@ -47,11 +57,11 @@ public class TratamentoRequisicao{
 		}
 	}
 	
-	private Mensagem buscarUsuario(Mensagem mensagemInput) {
+	private Mensagem buscarUsuario(Mensagem mensagemInput, int idSolicitante) {
 		DAOBuscarUsuarios buscarUsuarios = new DAOBuscarUsuarios();
 		Mensagem mensagemReply = new Mensagem();
 		try {
-			Object[][] retorno = buscarUsuarios.busacarUsuarios( (String) mensagemInput.getParametro("nome"));
+			Object[][] retorno = buscarUsuarios.busacarUsuarios( (String) mensagemInput.getParametro("nome"), idSolicitante);
 			if (retorno != null) {
 				mensagemReply.setRequisicao(Requisicao.BUSCAR_USUARIO_REPLY);
 				mensagemReply.setStatus(Status.USUARIOS_ENCONTRADOS);
@@ -74,7 +84,7 @@ public class TratamentoRequisicao{
 
 	}
 	
-	public Mensagem tratarRequisicao(Mensagem mensagemInput) {
+	public Mensagem tratarRequisicao(Mensagem mensagemInput, int idSolicitante) {
 		Requisicao requisicao = mensagemInput.getRequisicao();
 		
 		switch (requisicao) {
@@ -82,7 +92,7 @@ public class TratamentoRequisicao{
 			return (enviarMensagem(mensagemInput));
 			
 		case BUSCAR_USUARIO:
-			return (buscarUsuario(mensagemInput));
+			return (buscarUsuario(mensagemInput,idSolicitante));
 		default:
 			break;
 		}

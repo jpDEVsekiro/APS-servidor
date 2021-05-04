@@ -9,6 +9,8 @@ import aps.unip.enums.Status;
 
 public class Mensagem implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private Requisicao requisicao;
 	private Status status;
 	private Map<String, Object> parametros = new HashMap<String, Object>();

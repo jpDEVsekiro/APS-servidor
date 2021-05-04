@@ -32,7 +32,7 @@ public class Usuario {
 				try {
 					mensagemInput = (Mensagem) input.readObject();
 					TratamentoRequisicao tratamento = new TratamentoRequisicao();
-					Mensagem mensagemOutput = tratamento.tratarRequisicao(mensagemInput);
+					Mensagem mensagemOutput = tratamento.tratarRequisicao(mensagemInput,id);
 					dispararMensagem(mensagemOutput);
 				} catch (Exception e) {
 					if(e.getMessage().equalsIgnoreCase("Connection reset")) {

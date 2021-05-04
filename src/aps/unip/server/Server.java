@@ -28,8 +28,12 @@ public class Server {
 				System.out.println("[SERVIDOR AGUARDANDO NOVA CONEXÃO]");
 				Socket socket = server.esperaConexao();
 				System.out.println("[CLIENTE CONECTADO]");
-				TratamentoConexao conexao = new TratamentoConexao();
-				conexao.tratarConexao(socket);
+				new Thread() {
+					public void run() {
+						TratamentoConexao conexao = new TratamentoConexao();
+						conexao.tratarConexao(socket);
+					}
+				}.start();
 				System.out.println("//-----------------------//");
 			}
 

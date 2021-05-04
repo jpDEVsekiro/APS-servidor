@@ -2,6 +2,8 @@ package aps.unip.tratamento;
 
 import java.net.Socket;
 import java.util.Map;
+
+import aps.unip.daos.DAOMensagens;
 import aps.unip.daos.DAOUserCadastro;
 import aps.unip.daos.DAOUserLogin;
 import aps.unip.enums.Requisicao;
@@ -13,6 +15,12 @@ import aps.unip.usuarios.Usuarios;
 public class TratamentoConexao {
 	
 	public void tratarConexao(Socket socket) {
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		Usuario usuario = new Usuario(socket);
 		
 		if(usuario.getMensagemInput().getRequisicao() == Requisicao.CADASTRO) {
@@ -55,9 +63,14 @@ public class TratamentoConexao {
 				Usuarios.addUsuario(usuario);
 				
 				Mensagem mensagemRespostaLogin = new Mensagem();
+				DAOMensagens daoMensagens = new DAOMensagens();
+				Object[][] mensagensArquivadas = daoMensagens.buscarMensagensArquivadas(usuario.getUsuarioId());
 				mensagemRespostaLogin.setRequisicao(Requisicao.LOGIN_REPLY);
 				mensagemRespostaLogin.setStatus(Status.STATUS_OK);
 				mensagemRespostaLogin.setMap(retorno);
+				if (mensagensArquivadas != null) {
+					mensagemRespostaLogin.setParametros("mensagensArquivadas", mensagensArquivadas);
+				}
 				mensagemRespostaLogin.setParametros("mensagem", "usuario logado");
 				usuario.dispararMensagem(mensagemRespostaLogin);
 				usuario.iniciarRequisicaoListener();

@@ -11,7 +11,7 @@ public class teste {
 
 	public static void main(String[] args) {
 		DAOBuscarUsuarios buscarUsuarios = new DAOBuscarUsuarios();
-		Object[][] retorno = buscarUsuarios.busacarUsuarios("ad");
+		Object[][] retorno = buscarUsuarios.busacarUsuarios("ad",15);
 		System.out.println("f");
 		
 		JFrame frame = new JFrame();

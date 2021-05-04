@@ -8,9 +8,7 @@ import java.sql.SQLException;
 
 public class SingletonConnection {
 	
-	private static String URL = "jdbc:mysql://db4free.net:3306/apschat";
-	private static String USER = "apsunip";
-	private static String PASSWORD = "aps12345";
+	private static String URL = "jdbc:sqlite:BD/BancoDeDados.db";
 	private static Connection connection = null;
 	
 	static {
@@ -23,13 +21,13 @@ public class SingletonConnection {
 	
 	private static void connect() {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("org.sqlite.JDBC");
 			if (connection == null) {
-				connection = DriverManager.getConnection(URL, USER, PASSWORD);
+				connection = DriverManager.getConnection(URL);
 				connection.setAutoCommit(false);
 				System.out.println("[BANCO DE DADOS CONECTADO]");
 			}
-		} catch (ClassNotFoundException | SQLException e){
+		} catch (SQLException | ClassNotFoundException e){
 			e.printStackTrace();
 		}
 	}

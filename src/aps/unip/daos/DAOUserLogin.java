@@ -18,17 +18,18 @@ public class DAOUserLogin {
 		ResultSet resultSet = null;
 		try {
 			String SQL = String.format(
-					"SELECT * FROM usuario WHERE email_usuario='%s' AND senha_usuario='%s';",
+					"SELECT * FROM usuario WHERE usuario_email='%s'AND usuario_senha='%s';",
 					email,
 					senha);
 			statement = connection.prepareStatement(SQL);
 			resultSet = statement.executeQuery();
 			if(resultSet.next()) {
 				Map<String, Object> retorno = new HashMap<String, Object>();
-				retorno.put("nome", resultSet.getString("nome_usuario"));
-				retorno.put("id", resultSet.getInt("id_usuario"));
-				retorno.put("foto", resultSet.getBytes("foto"));
+				retorno.put("nome", resultSet.getString("usuario_nome"));
+				retorno.put("id", resultSet.getInt("usuario_id"));
+				retorno.put("foto", resultSet.getBytes("usuario_foto"));
 				return retorno;
+				
 			}
 			else {
 				return null;
